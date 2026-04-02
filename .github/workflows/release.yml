@@ -1,0 +1,60 @@
+name: Release MCPB bundle
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Sync version from tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          node -e "
+            const fs = require('fs');
+            for (const file of ['manifest.json', 'package.json']) {
+              const obj = JSON.parse(fs.readFileSync(file, 'utf8'));
+              obj.version = process.argv[1];
+              fs.writeFileSync(file, JSON.stringify(obj, null, 2) + '\n');
+            }
+          " "$VERSION"
+          echo "Bundle version set to $VERSION"
+
+      - name: Remove devDependencies before packing
+        run: npm prune --omit=dev
+
+      - name: Install mcpb CLI
+        run: npm install -g @anthropic-ai/mcpb
+
+      - name: Pack bundle
+        run: mcpb pack
+
+      - name: Create release and upload bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "MCP Connector For WordPress ${GITHUB_REF_NAME}" \
+            --generate-notes \
+            || true
+
+          gh release upload "${GITHUB_REF_NAME}" *.mcpb --clobber
