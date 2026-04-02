@@ -7,13 +7,6 @@ Last updated: 2026-04-01
 
 MCP Connector For WordPress ("the Connector") is a local MCP server that acts as a transparent bridge between an MCP host application (e.g. Claude Desktop) and a remote WordPress site. This privacy policy describes what data the Connector processes and how it is handled.
 
-## Maintained by
-
-Valu Digital Oy
-Helsinki, Finland
-https://valu.fi
-Email: info@valu.fi
-
 ## What data the Connector processes
 
 The Connector processes the following data in transit between the MCP host and your WordPress site:
