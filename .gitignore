@@ -1,0 +1,21 @@
+# Node
+node_modules/
+
+# Build output
+dist/
+
+# IDE
+.idea/
+.vscode/
+
+# AI
+.claude/
+.devai/
+.shotgun/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Bundle
+*.mcpb

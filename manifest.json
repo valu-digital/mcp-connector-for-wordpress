@@ -1,0 +1,94 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/mcpb/main/dist/mcpb-manifest.schema.json",
+  "manifest_version": "0.3",
+  "name": "mcp-connector-for-wordpress",
+  "display_name": "MCP Connector For WordPress",
+  "version": "0.1.0",
+  "description": "Connect Claude to any WordPress site — automatically discovers and proxies every tool, resource, and prompt exposed by the WordPress MCP Adapter.",
+  "long_description": "MCP Connector For WordPress is a transparent bridge that connects Claude Desktop (or any compatible MCP host) to a remote WordPress site over HTTP. It discovers every tool, resource, and prompt exposed by the WordPress MCP Adapter and proxies them to the AI agent at runtime.\n\nThe connector itself carries no built-in WordPress knowledge. What it can do depends entirely on the abilities registered on your WordPress site via the Abilities API. Plugins and themes register abilities with wp_register_ability(), the WordPress MCP Adapter converts them into MCP protocol tools, resources, and prompts, and this connector makes them available to the AI agent.\n\nHow it works:\n- **Discover**: the connector queries the WordPress MCP Adapter for all available abilities\n- **Proxy**: every tool call, resource read, and prompt request is forwarded transparently to the WordPress site\n- **Adapt**: when abilities are added or removed on the site, the connector picks them up automatically\n\nRequires the WordPress MCP Adapter (https://github.com/WordPress/mcp-adapter) to be installed on the target site.",
+  "author": {
+    "name": "Valu Digital Oy",
+    "url": "https://valu.fi"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/valu-digital/mcp-connector-for-wordpress"
+  },
+  "icon": "wp-icon.png",
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/dist/index.js"],
+      "env": {
+        "WP_API_URL": "${user_config.wp_api_url}",
+        "WP_USERNAME": "${user_config.wp_username}",
+        "WP_APP_PASSWORD": "${user_config.wp_app_password}",
+        "DEBUG": "${user_config.debug_mode}"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "mcp-adapter-discover-abilities",
+      "description": "List all WordPress abilities (tools, resources, prompts) available on the connected site, with their names, descriptions, and input schemas"
+    },
+    {
+      "name": "mcp-adapter-execute-ability",
+      "description": "Execute any WordPress ability by name with the given arguments — available abilities depend on what is registered on the connected site"
+    },
+    {
+      "name": "mcp-adapter-get-ability-info",
+      "description": "Get detailed information about a specific WordPress ability including its full input/output schema"
+    }
+  ],
+  "prompts_generated": true,
+  "keywords": [
+    "wordpress",
+    "cms",
+    "mcp",
+    "bridge",
+    "connector",
+    "content-management"
+  ],
+  "license": "GPL-2.0-or-later",
+  "privacy_policies": [
+    "https://github.com/valu-digital/mcp-connector-for-wordpress/blob/main/PRIVACY.md"
+  ],
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  },
+  "user_config": {
+    "wp_api_url": {
+      "type": "string",
+      "title": "WordPress Site URL",
+      "description": "Base URL of your WordPress site, e.g. https://example.com (no trailing slash)",
+      "required": true
+    },
+    "wp_username": {
+      "type": "string",
+      "title": "WordPress Username",
+      "description": "Your WordPress login username (must have administrator role)",
+      "required": true
+    },
+    "wp_app_password": {
+      "type": "string",
+      "title": "Application Password",
+      "description": "WordPress Application Password. Generate one at: Users → Your Profile → Application Passwords. Copy the generated password including spaces.",
+      "sensitive": true,
+      "required": true
+    },
+    "debug_mode": {
+      "type": "string",
+      "title": "Debug Mode",
+      "description": "Set to 'mcp-connector' to enable verbose debug logging to stderr",
+      "default": "",
+      "required": false
+    }
+  }
+}
