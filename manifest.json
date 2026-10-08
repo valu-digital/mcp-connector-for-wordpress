@@ -3,7 +3,7 @@
   "manifest_version": "0.3",
   "name": "mcp-connector-for-wordpress",
   "display_name": "MCP Connector For WordPress",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Connect Claude to any WordPress site — automatically discovers and proxies every tool, resource, and prompt exposed by the WordPress MCP Adapter.",
   "long_description": "MCP Connector For WordPress is a transparent bridge that connects Claude Desktop (or any compatible MCP host) to a remote WordPress site over HTTP. It discovers every tool, resource, and prompt exposed by the WordPress MCP Adapter and proxies them to the AI agent at runtime.\n\nThe connector itself carries no built-in WordPress knowledge. What it can do depends entirely on the abilities registered on your WordPress site via the Abilities API. Plugins and themes register abilities with wp_register_ability(), the WordPress MCP Adapter converts them into MCP protocol tools, resources, and prompts, and this connector makes them available to the AI agent.\n\nHow it works:\n- **Discover**: the connector queries the WordPress MCP Adapter for all available abilities\n- **Proxy**: every tool call, resource read, and prompt request is forwarded transparently to the WordPress site\n- **Adapt**: when abilities are added or removed on the site, the connector picks them up automatically\n\nRequires the WordPress MCP Adapter (https://github.com/WordPress/mcp-adapter) to be installed on the target site.",
   "author": {
@@ -25,6 +25,7 @@
         "WP_API_URL": "${user_config.wp_api_url}",
         "WP_USERNAME": "${user_config.wp_username}",
         "WP_APP_PASSWORD": "${user_config.wp_app_password}",
+        "WP_MCP_PROTOCOL_VERSION": "${user_config.mcp_protocol_version}",
         "DEBUG": "${user_config.debug_mode}"
       }
     }
@@ -82,6 +83,13 @@
       "description": "WordPress Application Password. Generate one at: Users → Your Profile → Application Passwords. Copy the generated password including spaces.",
       "sensitive": true,
       "required": true
+    },
+    "mcp_protocol_version": {
+      "type": "string",
+      "title": "MCP Protocol Version",
+      "description": "MCP schema revision used to talk to the WordPress MCP Adapter: '2025-11-25' (session-based, default) or '2026-07-28' (sessionless, requires MCP Adapter 0.7.0 or newer)",
+      "default": "2025-11-25",
+      "required": false
     },
     "debug_mode": {
       "type": "string",

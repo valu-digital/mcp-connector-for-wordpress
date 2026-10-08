@@ -8,6 +8,7 @@
  *   WP_API_URL       — base URL of the WordPress site, e.g. https://example.com
  *   WP_USERNAME      — WordPress username (administrator)
  *   WP_APP_PASSWORD  — WordPress Application Password (spaces allowed)
+ *   WP_MCP_PROTOCOL_VERSION — MCP protocol revision: 2025-11-25 (default) or 2026-07-28
  *   DEBUG            — set to "mcp-connector" for verbose debug logging
  */
 
@@ -22,7 +23,7 @@ import {
   GetPromptRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-import { WordPressClient } from "./wp-client.js";
+import { WordPressClient, parseProtocolVersion } from "./wp-client.js";
 import { log } from "./logger.js";
 
 // ---------------------------------------------------------------------------
@@ -41,10 +42,22 @@ function requireEnv(name: string): string {
   return value;
 }
 
+function resolveProtocolVersion() {
+  try {
+    return parseProtocolVersion(process.env.WP_MCP_PROTOCOL_VERSION);
+  } catch (err) {
+    log.error((err as Error).message);
+    process.exit(1);
+  }
+}
+
+const protocolVersion = resolveProtocolVersion();
+
 const wpClient = new WordPressClient({
   baseUrl: requireEnv("WP_API_URL"),
   username: requireEnv("WP_USERNAME"),
   appPassword: requireEnv("WP_APP_PASSWORD"),
+  protocolVersion,
 });
 
 // ---------------------------------------------------------------------------
@@ -52,7 +65,7 @@ const wpClient = new WordPressClient({
 // ---------------------------------------------------------------------------
 
 const server = new Server(
-  { name: "mcp-connector-for-wordpress", version: "0.1.0" },
+  { name: "mcp-connector-for-wordpress", version: "0.2.0" },
   {
     capabilities: {
       tools: {},
@@ -149,7 +162,11 @@ async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  log.info("Ready — WordPress session will be established on first request");
+  log.info(
+    protocolVersion === "2026-07-28"
+      ? "Ready — requests are sessionless (MCP 2026-07-28)"
+      : "Ready — WordPress session will be established on first request",
+  );
 }
 
 main().catch((err) => {

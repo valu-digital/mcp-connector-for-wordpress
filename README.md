@@ -46,12 +46,13 @@ Download the latest `.mcpb` bundle from [GitHub Releases](https://github.com/val
 
 ## Configuration reference
 
-| Variable          | Required | Description                                                 |
-| ----------------- | -------- | ----------------------------------------------------------- |
-| `WP_API_URL`      | Yes      | Base URL of your WordPress site, e.g. `https://example.com` |
-| `WP_USERNAME`     | Yes      | WordPress administrator username                            |
-| `WP_APP_PASSWORD` | Yes      | Application Password (spaces allowed)                       |
-| `DEBUG`           | No       | Set to `mcp-connector` for verbose debug output on stderr   |
+| Variable                  | Required | Description                                                                                                            |
+| ------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `WP_API_URL`              | Yes      | Base URL of your WordPress site, e.g. `https://example.com`                                                            |
+| `WP_USERNAME`             | Yes      | WordPress administrator username                                                                                       |
+| `WP_APP_PASSWORD`         | Yes      | Application Password (spaces allowed)                                                                                  |
+| `WP_MCP_PROTOCOL_VERSION` | No       | MCP schema revision: `2025-11-25` (default, session-based) or `2026-07-28` (sessionless, requires MCP Adapter ≥ 0.7.0) |
+| `DEBUG`                   | No       | Set to `mcp-connector` for verbose debug output on stderr                                                              |
 
 ---
 
